@@ -51,7 +51,8 @@ class AuthorController extends Controller
     public function show(Author $author): JsonResponse
     {
         try {
-            return response()->json($author, 200);
+            $specificAuthor = $this->authorService->show($author);
+            return response()->json($specificAuthor, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch author', 'message' => $e->getMessage()], 500);
         }

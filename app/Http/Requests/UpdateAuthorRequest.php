@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Author;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateAuthorRequest extends FormRequest
@@ -21,9 +22,10 @@ class UpdateAuthorRequest extends FormRequest
      */
     public function rules()
     {
+        // $author = Author::find($this->route('author'));
         return [
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255' . $this->route('author')->id   
+            'email' => 'sometimes|required|email|max:255' . $this->route('author')->id  
         ];
     }
     public function messages()

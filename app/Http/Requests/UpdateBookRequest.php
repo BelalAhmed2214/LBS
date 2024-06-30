@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use App\Models\Book;
 class UpdateBookRequest extends FormRequest
 {
     /**
@@ -11,7 +11,7 @@ class UpdateBookRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,13 @@ class UpdateBookRequest extends FormRequest
      */
     public function rules(): array
     {
+        // $book = Book::find($this->route('book')); // Access book ID from route parameter
+
         return [
-            //
+            'title' => 'sometimes|required|string|max:255',
+            'isbn' => 'sometimes|required|string|unique:books,isbn,' . $this->route('book')->id,
+            'published_date' => 'sometimes|required|date',
+            'author_id' => 'sometimes|required|exists:authors,id',
         ];
     }
 }
