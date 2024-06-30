@@ -1,15 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Services\BookService;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
-use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
 class BookController extends Controller
 {
     protected $bookService;
@@ -18,71 +15,55 @@ class BookController extends Controller
     {
         $this->bookService = $bookService;
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index():JsonResponse
+
+    public function index()
     {
-        try{
+        try {
             $books = $this->bookService->index();
-            return response()->json($books, 200);
-
-        } catch(\Exception $e){
-            return response()->json(['error' => 'Failed to fetch books', 'message' => $e->getMessage()], 500);
-
+            return response()->json($books, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch books'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreBookRequest $request)
     {
         try {
             $book = $this->bookService->store($request->validated());
-            return response()->json($book, 201);
+            return response()->json($book, Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            $status = $e->getCode() === 400 ? 400 : 500;
-            return response()->json(['error' => 'Failed to store Book', 'message' => $e->getMessage()], $status);
+            return response()->json(['error' => 'Failed to create book'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Book $book)
     {
         try {
-            return response()->json($book, 200);
+            $book = $this->bookService->show($book);
+            return response()->json($book, Response::HTTP_OK);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch book', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Failed to fetch book'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateBookRequest $request, Book $book)
     {
         try {
-            $updatedBook = $this->bookService->update($request->validated(), $book);
-            return response()->json($updatedBook, 200);
+            $book = $this->bookService->update($request->validated(), $book);
+            return response()->json($book, Response::HTTP_OK);
         } catch (\Exception $e) {
-            $status = $e->getCode() === 400 ? 400 : 500;
-            return response()->json(['error' => 'Failed to update book', 'message' => $e->getMessage()], $status);
+            return response()->json(['error' => 'Failed to update book'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Book $book)
     {
         try {
             $this->bookService->delete($book);
-            return response()->json(['message' => 'Book deleted successfully'], 200);
+            return response()->json(['message' => 'Book deleted successfully'], Response::HTTP_OK);
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete book', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Failed to delete book'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -27,6 +27,7 @@ class UpdateAuthorRequest extends FormRequest
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|max:255' . $this->route('author')->id  
         ];
+      
     }
     public function messages()
     {
